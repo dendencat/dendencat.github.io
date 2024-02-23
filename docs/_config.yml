@@ -17,9 +17,11 @@ title: dendencatのリポジトリ紹介ページ
 email: s.k.freem.01@gmail.com
 description: >- # this means to ignore newlines until "baseurl:"
   本ページでdendencatのリポジトリの紹介を行っています。
-baseurl: "" # the subpath of your site, e.g. /blog
-url: "" # the base hostname & protocol for your site, e.g. http://example.com
-twitter_username: dendencat
+
+
+baseurl: "/blog" # the subpath of your site, e.g. /blog
+url: "http://blog.iohub.link" # the base hostname & protocol for your site, e.g. http://example.com
+twitter_username: sakura_hacker
 github_username:  dendencat
 
 # Build settings
