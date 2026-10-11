@@ -1,0 +1,26 @@
+# GitHub 公開リポジトリ (gh repo list dendencat --visibility public, 2026-10-12 取得) から選んだもの。
+# 説明文は各リポジトリの description をそのまま使用。description が空のものは言語のみ。
+- name: techblog_cms
+  description: テックブログの専用CMS
+  language: Python
+- name: minitodo
+  description: ""
+  language: "C#"
+- name: rslcheck
+  description: RSL(Really Simple Licensing)の構文チェックツール
+  language: Python
+- name: smart-wireframe
+  description: ワイヤーフレームでHTML/CSSに変換するツール
+  language: JavaScript
+- name: fish-viewing-simulator
+  description: Interactive 3D WebGL aquarium with AI fish behavior, built with React Three Fiber.
+  language: ""
+- name: minimal-container
+  description: ""
+  language: Go
+- name: rapidxfer
+  description: ""
+  language: Rust
+- name: sumi-paint
+  description: ""
+  language: Swift

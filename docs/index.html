@@ -1,0 +1,44 @@
+---
+layout: default
+---
+<section class="hero">
+  <img class="avatar" src="https://avatars.githubusercontent.com/u/33782903?v=4&s=240" alt="dendencat のアバター" width="120" height="120">
+  <div>
+    <h1>dendencat</h1>
+    <p class="lead">DevSecOps / Infosec</p>
+    <ul class="tags">
+      <li>Kubernetes</li><li>Container</li><li>Ansible</li><li>Python</li>
+    </ul>
+    <!-- TODO: 本人確認 — 自己紹介文（経歴・肩書き・興味分野など）。GitHub の bio 以上の情報は未掲載 -->
+    <p class="links"><a class="btn" href="https://github.com/dendencat">GitHub</a> <a class="btn ghost" href="{{ '/blog/' | relative_url }}">Blog</a></p>
+  </div>
+</section>
+
+<section>
+  <h2>About</h2>
+  <p>DevSecOps と情報セキュリティを軸に、コンテナ・Kubernetes・Ansible・Python まわりを扱っています。GitHub では自分用のツールや実験的なプロダクトを公開しています。</p>
+  <!-- TODO: 本人確認 — 上記は GitHub bio と公開リポジトリから要約した文。表現を本人に確認 -->
+</section>
+
+<section>
+  <h2>Projects</h2>
+  <div class="grid">
+  {% for p in site.data.projects %}
+    <a class="card" href="https://github.com/dendencat/{{ p.name }}">
+      <h3>{{ p.name }}</h3>
+      {% if p.description != "" %}<p>{{ p.description }}</p>{% else %}<p class="muted"><!-- TODO: 本人確認 — 説明文 -->&nbsp;</p>{% endif %}
+      {% if p.language != "" %}<span class="lang">{{ p.language }}</span>{% endif %}
+    </a>
+  {% endfor %}
+  </div>
+  <p class="more"><a href="https://github.com/dendencat?tab=repositories">すべてのリポジトリを見る →</a></p>
+</section>
+
+<section>
+  <h2>Recent posts</h2>
+  <ul class="posts">
+  {% for post in site.posts limit:5 %}
+    <li><time>{{ post.date | date: '%Y-%m-%d' }}</time> <a href="{{ post.url | relative_url }}">{{ post.title | escape }}</a></li>
+  {% endfor %}
+  </ul>
+</section>
