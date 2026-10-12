@@ -1,0 +1,26 @@
+.ed-note,.ed-hint{color:var(--muted);font-size:.85rem}
+.ed-hint{display:block;margin:2px 0 0;line-height:1.5}
+.ed-hint.warn{color:#b45309}
+.ed-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px 16px;margin:24px 0 16px}
+.ed-field{display:flex;flex-direction:column;gap:4px;font-size:.88rem;color:var(--muted)}
+.ed-wide{grid-column:1/-1}
+.ed-form input,.ed-form textarea{width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:8px;background:var(--card);color:var(--fg);font:inherit;font-size:.95rem}
+.ed-form input:focus,.ed-form textarea:focus{outline:2px solid var(--accent);outline-offset:-1px;border-color:transparent}
+.ed-form input[aria-invalid=true]{border-color:#dc2626}
+.ed-panes{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.ed-pane{display:flex;flex-direction:column;gap:4px;min-width:0}
+.ed-pane-label{font-size:.88rem;color:var(--muted)}
+.ed-form textarea{min-height:480px;flex:1;resize:vertical;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.88rem;line-height:1.6}
+.ed-preview{min-height:480px;max-height:80vh;overflow:auto;padding:4px 16px;border:1px solid var(--border);border-radius:8px;background:var(--card);font-size:.95rem}
+.ed-preview h1,.ed-preview h2{margin-top:24px}
+.ed-badlink{text-decoration:line-through;color:var(--muted)}
+.ed-actions{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:20px}
+.ed-form button.btn{border:1px solid var(--accent);cursor:pointer;font:inherit;font-size:.9rem;line-height:1.75}
+.ed-form button.ed-danger{color:#dc2626;border-color:#dc2626}
+.ed-status{min-height:1.75em;margin:12px 0;font-size:.9rem}
+.ed-status.error{color:#dc2626}
+.ed-output{margin-top:8px;border-top:1px solid var(--border);padding-top:8px}
+.ed-output summary{cursor:pointer;color:var(--muted);font-size:.9rem}
+.ed-pre{max-height:240px;overflow:auto;padding:10px 12px;background:var(--code);border-radius:6px;font-size:.8rem;white-space:pre-wrap;word-break:break-all}
+@media (prefers-color-scheme:dark){.ed-hint.warn{color:#fbbf24}.ed-status.error,.ed-form button.ed-danger{color:#f87171;border-color:#f87171}}
+@media (max-width:760px){.ed-fields,.ed-panes{grid-template-columns:1fr}.ed-form textarea,.ed-preview{min-height:300px}}

@@ -1,0 +1,62 @@
+---
+layout: default
+title: Editor
+sitemap: false
+robots: noindex, nofollow
+extra_css:
+  - /assets/css/editor.css
+csp: "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'"
+---
+<h1>記事エディター</h1>
+<p class="ed-note">ここで書いた記事は GitHub の新規ファイル作成画面に引き渡されます。このページ自体は GitHub と通信しません（トークン不要）。下書きはこのブラウザの localStorage にだけ保存されます。</p>
+
+<form id="ed-form" class="ed-form" autocomplete="off" novalidate>
+  <div class="ed-fields">
+    <label class="ed-field ed-wide">タイトル
+      <input type="text" id="ed-title" maxlength="200" required>
+    </label>
+    <label class="ed-field">slug（英小文字・数字・ハイフン）
+      <input type="text" id="ed-slug" maxlength="100" spellcheck="false" placeholder="my-first-post" required>
+      <small id="ed-slug-hint" class="ed-hint"></small>
+    </label>
+    <label class="ed-field">日付（JST）
+      <input type="date" id="ed-date" required>
+    </label>
+    <label class="ed-field">カテゴリ（カンマ区切り）
+      <input type="text" id="ed-categories" maxlength="200" placeholder="blog, security">
+    </label>
+    <label class="ed-field">タグ（カンマ区切り）
+      <input type="text" id="ed-tags" maxlength="300" placeholder="kubernetes, python">
+    </label>
+  </div>
+
+  <div class="ed-panes">
+    <label class="ed-field ed-pane">本文（Markdown）
+      <textarea id="ed-body" spellcheck="false" placeholder="## 見出し&#10;&#10;本文を書きます。"></textarea>
+    </label>
+    <div class="ed-pane">
+      <span class="ed-pane-label">プレビュー（簡易）</span>
+      <div id="ed-preview" class="prose ed-preview" aria-live="polite"></div>
+    </div>
+  </div>
+
+  <div class="ed-actions">
+    <button type="button" id="ed-publish" class="btn">GitHub で投稿</button>
+    <button type="button" id="ed-copy" class="btn ghost">Markdown をコピー</button>
+    <button type="button" id="ed-download" class="btn ghost">.md をダウンロード</button>
+    <button type="button" id="ed-clear" class="btn ghost ed-danger">下書きをクリア</button>
+    <span id="ed-saved" class="ed-hint"></span>
+  </div>
+  <p id="ed-status" class="ed-status" role="status"></p>
+
+  <details class="ed-output">
+    <summary>生成内容</summary>
+    <p class="ed-hint">ファイル名: <code id="ed-filename"></code></p>
+    <p class="ed-hint">GitHub URL（<span id="ed-url-length">0</span> 文字）</p>
+    <pre id="ed-url" class="ed-pre"></pre>
+    <p class="ed-hint">Markdown</p>
+    <pre id="ed-markdown" class="ed-pre"></pre>
+  </details>
+</form>
+
+<script src="{{ '/assets/js/editor.js' | relative_url }}" defer></script>
