@@ -47,6 +47,11 @@ csp: "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'; c
     <button type="button" id="ed-clear" class="btn ghost ed-danger">下書きをクリア</button>
     <span id="ed-saved" class="ed-hint"></span>
   </div>
+  <p class="ed-caution"><strong>注意:</strong> GitHub のコミット画面で差分を確認すること。gh-pages は保護されているので「Create a new branch and start a pull request」を選ぶこと。</p>
+  <div id="ed-warnings" class="ed-warnings" role="alert" hidden>
+    <p id="ed-warnings-summary" class="ed-warnings-title"></p>
+    <ul id="ed-warnings-list"></ul>
+  </div>
   <p id="ed-status" class="ed-status" role="status"></p>
 
   <details class="ed-output">

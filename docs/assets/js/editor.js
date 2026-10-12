@@ -14,7 +14,8 @@
     categories: $('ed-categories'), tags: $('ed-tags'), body: $('ed-body'), preview: $('ed-preview'),
     publish: $('ed-publish'), copy: $('ed-copy'), download: $('ed-download'), clear: $('ed-clear'),
     saved: $('ed-saved'), status: $('ed-status'), filename: $('ed-filename'),
-    url: $('ed-url'), urlLength: $('ed-url-length'), markdown: $('ed-markdown')
+    url: $('ed-url'), urlLength: $('ed-url-length'), markdown: $('ed-markdown'),
+    warnings: $('ed-warnings'), warningsSummary: $('ed-warnings-summary'), warningsList: $('ed-warnings-list')
   };
   // slug がタイトルから自動生成されたものか（手入力したら false）
   var slugAuto = true;
@@ -253,6 +254,93 @@
     el.status.className = 'ed-status' + (isError ? ' error' : '');
   }
 
+  // ---- 危険な記述の検査 ----
+  // 投稿前に本文と front matter 項目から HTML/JS 埋め込みや Liquid 構文を探す（大文字小文字は無視）。
+  // 検出しても投稿自体は止めず、一覧を見せて confirm() で明示的に同意させる。
+
+  var DANGER_PATTERNS = [
+    { label: '<script', re: /<script/gi },
+    { label: '<iframe', re: /<iframe/gi },
+    { label: '<object', re: /<object/gi },
+    { label: '<embed', re: /<embed/gi },
+    { label: '<style', re: /<style/gi },
+    { label: 'on〜= イベント属性', re: /\bon\w+\s*=/gi },
+    { label: 'javascript: URL', re: /j\s*a\s*v\s*a\s*s\s*c\s*r\s*i\s*p\s*t\s*:/gi },
+    { label: 'Liquid タグ {%', re: /\{%/g },
+    { label: 'Liquid 出力 {{', re: /\{\{/g }
+  ];
+  var SCAN_FIELDS = [
+    { key: 'title', label: 'タイトル' }, { key: 'slug', label: 'slug' },
+    { key: 'categories', label: 'カテゴリ' }, { key: 'tags', label: 'タグ' }, { key: 'body', label: '本文' }
+  ];
+  var EXCERPT_CONTEXT = 20;
+  var MAX_LISTED = 50;
+  var MAX_IN_CONFIRM = 10;
+
+  // 一致箇所の前後を切り出し、改行・制御文字は空白にして 1 行にする。
+  function excerpt(text, start, end) {
+    var from = Math.max(0, start - EXCERPT_CONTEXT);
+    var to = Math.min(text.length, end + EXCERPT_CONTEXT);
+    return (from > 0 ? '…' : '') + text.slice(from, to).replace(RE_CTRL, ' ') + (to < text.length ? '…' : '');
+  }
+
+  function lineOf(text, index) { return text.slice(0, index).split('\n').length; }
+
+  function scanDanger() {
+    var found = [];
+    SCAN_FIELDS.forEach(function (f) {
+      var text = el[f.key].value.replace(/\r\n?/g, '\n');
+      DANGER_PATTERNS.forEach(function (p) {
+        p.re.lastIndex = 0;
+        var m;
+        while ((m = p.re.exec(text))) {
+          found.push({
+            field: f.label + (f.key === 'body' ? ' ' + lineOf(text, m.index) + '行目' : ''),
+            kind: p.label,
+            excerpt: excerpt(text, m.index, m.index + m[0].length)
+          });
+          if (!m[0].length) p.re.lastIndex++;
+        }
+      });
+    });
+    return found;
+  }
+
+  function describe(w) { return '[' + w.field + '] ' + w.kind + ': ' + w.excerpt; }
+
+  // 一覧は textContent だけで組み立てる（innerHTML は使わない）。
+  function showWarnings(found) {
+    el.warningsList.textContent = '';
+    if (!found.length) { el.warnings.hidden = true; return; }
+    el.warningsSummary.textContent = '危険な可能性のある記述が ' + found.length + ' 件見つかりました。' +
+      'HTML/JavaScript の埋め込みや Liquid 構文は、公開ページでスクリプト実行やビルド時の展開につながります。意図したものか確認してください。';
+    found.slice(0, MAX_LISTED).forEach(function (w) {
+      var li = document.createElement('li');
+      li.appendChild(document.createTextNode('[' + w.field + '] ' + w.kind + ': '));
+      var code = document.createElement('code');
+      code.textContent = w.excerpt;
+      li.appendChild(code);
+      el.warningsList.appendChild(li);
+    });
+    if (found.length > MAX_LISTED) {
+      var more = document.createElement('li');
+      more.textContent = '…ほか ' + (found.length - MAX_LISTED) + ' 件';
+      el.warningsList.appendChild(more);
+    }
+    el.warnings.hidden = false;
+  }
+
+  function confirmDanger(found) {
+    var lines = found.slice(0, MAX_IN_CONFIRM).map(function (w) { return '・' + describe(w); });
+    if (found.length > MAX_IN_CONFIRM) lines.push('…ほか ' + (found.length - MAX_IN_CONFIRM) + ' 件（一覧はページ上に表示）');
+    return window.confirm(
+      '【警告】危険な可能性のある記述が ' + found.length + ' 件見つかりました。\n\n' + lines.join('\n') +
+      '\n\nスクリプト・埋め込み要素・イベント属性・javascript: URL・Liquid 構文は、' +
+      '公開ページで実行されたりビルド時に展開されたりします。\n' +
+      '内容を理解したうえで、それでも GitHub の新規ファイル画面を開きますか？'
+    );
+  }
+
   // ---- 下書き (localStorage) ----
 
   var FIELDS = ['title', 'slug', 'date', 'categories', 'tags', 'body'];
@@ -293,13 +381,19 @@
   function publish() {
     var r = refreshOutput();
     if (r.errors.length) { setStatus(r.errors.join(' '), true); return; }
+    var found = scanDanger();
+    showWarnings(found);
     if (r.url.length > MAX_URL_LENGTH) {
       setStatus('URL が ' + r.url.length + ' 文字で上限（' + MAX_URL_LENGTH + '）を超えるため開きません。' +
         '「Markdown をコピー」または「.md をダウンロード」を使い、GitHub 上で ' + r.filename + ' として作成してください。', true);
       return;
     }
+    if (found.length && !confirmDanger(found)) {
+      setStatus('危険な可能性のある記述があるため、GitHub を開くのを中止しました。', true);
+      return;
+    }
     window.open(r.url, '_blank', 'noopener,noreferrer');
-    setStatus('GitHub の新規ファイル画面を開きました。内容を確認して Commit してください。', false);
+    setStatus('GitHub の新規ファイル画面を開きました。差分を確認し、「Create a new branch and start a pull request」を選んでください。', false);
   }
 
   function copyMarkdown() {
